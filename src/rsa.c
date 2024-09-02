@@ -37,15 +37,16 @@ EVP_PKEY*  generateKeys(int bitlength){
 }
 
 
-cipher_t* encrypt(EVP_PKEY* rsaKey, const char* plaintext){
+char* encrypt(EVP_PKEY* rsaKey, const char* plaintext){
 	int len = strlen(plaintext)+1;
 	EVP_PKEY_CTX* ctx;
 	ENGINE* eng;
-	unsigned char out[1000];
+	unsigned const char out[10000];
+	unsigned const char* buffer;
 	size_t* outl;
 
-	memset(out, 0, sizeof(char) *1000);
-	outl = (size_t*) malloc(sizeof(char) * 1000);
+	buffer = (char*) malloc(sizeof(char)*10000);
+	outl = (size_t*) malloc(sizeof(char) * 10000);
 	eng  = ENGINE_by_id("Wahoowa");
 
 	ENGINE_init(eng);
@@ -55,8 +56,9 @@ cipher_t* encrypt(EVP_PKEY* rsaKey, const char* plaintext){
 		
 	EVP_PKEY_encrypt_init(ctx);
 	EVP_PKEY_encrypt(ctx, out, outl, plaintext, len);
-	cipher->c = out;
-	return cipher;
+	strcpy(buffer, out);
+	free(outl);;
+	return buffer;
 }
 
 	

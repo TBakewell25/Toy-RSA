@@ -13,6 +13,6 @@
 
 EVP_PKEY* generateKeys(int bitlength);
 
-cipher_t* encrypt(EVP_PKEY* rsaKey, const char* plaintext);
+char* encrypt(EVP_PKEY* rsaKey, const char* plaintext);
 	
 #endif
