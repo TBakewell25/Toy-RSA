@@ -42,15 +42,14 @@ int main(int argc, char** argv){
 			i++;
 			int bitLength = atoi(argv[i]);
 			EVP_PKEY* key = generateKeys(bitLength);
-			encrypt(key, "Hello");
 			writeKeyToFile (key, keyName);
 		}
 		if(strcmp("-encrypt", argv[i]) == 0){
-			char* fileName = strcat(keyName, "-public.key");
-			
-			//void* key = readKeyFromeFile(fileName);
-			//char* cipherText = encrypt(key, plaintex);
-			//writeCipherTextToFile(outputFileName, cipherText);
+			//char* fileName = strcat(keyName, "-public.key");
+		
+			EVP_PKEY* key = readKeyFromFile("Output.pem");
+			char* cipherText = encrypt(key, "Hello, I am testing this");
+			writeCipherTextToFile(outputFileName, cipherText);
 		}
 
 		if(strcmp("-decrypt", argv[i]) == 0){
