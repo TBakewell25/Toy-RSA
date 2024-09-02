@@ -52,12 +52,36 @@ char* encrypt(EVP_PKEY* rsaKey, const char* plaintext){
 	ENGINE_init(eng);
 	
 	ctx= EVP_PKEY_CTX_new(rsaKey, NULL);
-	cipher_t* cipher = (cipher_t*) malloc(sizeof(cipher_t));
+	//cipher_t* cipher = (cipher_t*) malloc(sizeof(cipher_t));
 		
 	EVP_PKEY_encrypt_init(ctx);
 	EVP_PKEY_encrypt(ctx, out, outl, plaintext, len);
 	strcpy(buffer, out);
-	free(outl);;
+	free(outl);
+	return buffer;
+}
+
+char* decrypt(EVP_PKEY* rsaKey, const char* ciphertext){
+	int len = strlen(ciphertext)+1;
+	EVP_PKEY_CTX* ctx;
+	ENGINE* eng;
+	unsigned const char out[10000];
+	unsigned const char* buffer;
+	size_t* outl;
+
+	buffer = (char*) malloc(sizeof(char)*10000);
+	outl = (size_t*) malloc(sizeof(char) * 10000);
+	eng  = ENGINE_by_id("Wahoowa");
+
+	ENGINE_init(eng);
+	
+	ctx= EVP_PKEY_CTX_new(rsaKey, NULL);
+	//cipher_t* cipher = (cipher_t*) malloc(sizeof(cipher_t));
+		
+	EVP_PKEY_decrypt_init(ctx);
+	EVP_PKEY_decrypt(ctx, out, outl, ciphertext, len);
+	strcpy(buffer, out);
+	free(outl);
 	return buffer;
 }
 

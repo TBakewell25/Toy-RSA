@@ -14,5 +14,7 @@
 EVP_PKEY* generateKeys(int bitlength);
 
 char* encrypt(EVP_PKEY* rsaKey, const char* plaintext);
-	
+
+char* decrypt(EVP_PKEY* rsaKey, const char* ciphertext);
+
 #endif

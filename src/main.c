@@ -53,10 +53,12 @@ int main(int argc, char** argv){
 		}
 
 		if(strcmp("-decrypt", argv[i]) == 0){
-			char* fileName = strcat(keyName, "-public.key");
-			//char* cipherText = readCipherTextFromeFile(fileName);
-			//char*plaintext = decrypt(key, ciphertext);
-			//writeCipherTextToFile(outputFileName, cipherText);
+			//char* fileName = strcat(keyName, "-public.key");
+			EVP_PKEY* key = readKeyFromFile("Output.pem");
+
+			char* cipherText = readCipherTextFromeFile("output.txt");
+			char*	plaintext = decrypt(key, cipherText);
+			writeCipherTextToFile(outputFileName, cipherText);
 		}
 		if(strcmp("-sign", argv[i]) == 0){
 			char* fileName = strcat(keyName, "-private.key");
