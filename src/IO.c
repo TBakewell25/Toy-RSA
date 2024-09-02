@@ -24,6 +24,12 @@ char* readCipherTextFromeFile(char* inputFileName){
 	return myString;
 }
 
+void writeKeyToFile(EVP_PKEY* rsaKey, char* filebasename){
+	//char* filename = strcat(filebasename, "-public.key");
+	FILE* keyFile = fopen("Output.pem", "w");
+	PEM_write_PUBKEY(keyFile, rsaKey);
+	fclose(keyFile);
+}
 /*
 void writeKeyToFile(EVP_PKEY* rsakey, char* filebasename){
 	if (RSA_get0_e(rsakey)){

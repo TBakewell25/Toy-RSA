@@ -43,7 +43,7 @@ int main(int argc, char** argv){
 			int bitLength = atoi(argv[i]);
 			EVP_PKEY* key = generateKeys(bitLength);
 			encrypt(key, "Hello");
-			//writeKeyToFile (key,keyName);
+			writeKeyToFile (key, keyName);
 		}
 		if(strcmp("-encrypt", argv[i]) == 0){
 			char* fileName = strcat(keyName, "-public.key");
