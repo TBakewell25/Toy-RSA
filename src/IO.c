@@ -14,12 +14,16 @@ void writeCipherTextToFile(char* outputFileName, const char* cipherText){
 }
 
 
-char* readCipherTextFromeFile(char* inputFileName){
+char* readCipherTextFromFile(char* inputFileName){
 	FILE* inputFile;
-	
+	size_t buff_size;
+	char* myString;
+
+	myString = (char*) malloc(sizeof(char)*1024);	
+	buff_size = 1024;
+
 	inputFile = fopen(inputFileName, "r");
-	char* myString = malloc(sizeof(char) * 100);
-	fgets(myString, 100, inputFile);
+	fgets(myString, 1024, inputFile);
 	fclose(inputFile); 
 	
 	return myString;

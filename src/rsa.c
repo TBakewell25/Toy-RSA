@@ -32,13 +32,13 @@ RSA* generateKeys(unsigned int bitlength){
 	return rsa;
 }
 
-char* encrypt(RSA* rsaKey, const char* plaintext, unsigned int encryptFlag){
+char* encrypt(RSA* rsaKey, const unsigned char* plaintext, unsigned int encryptFlag){
 	unsigned int flen, padding = RSA_PKCS1_PADDING;
 	
 	flen = strlen(plaintext) +1;
 	unsigned char* buff = (unsigned char*) malloc(sizeof(char) * 1000);
 
-	if (encryptFlag)
+	if (encryptFlag == 1)
 		RSA_public_encrypt(flen, plaintext, buff, rsaKey, padding);
 		
 	else
@@ -46,8 +46,21 @@ char* encrypt(RSA* rsaKey, const char* plaintext, unsigned int encryptFlag){
 
 	return buff;
 }
+
+char* decrypt(RSA* rsaKey, const unsigned char* ciphertext, unsigned int decryptFlag){
+	unsigned int flen, padding = RSA_PKCS1_PADDING;
 	
-	
+	flen = strlen(ciphertext) +1;
+	unsigned char* buff = (unsigned char*) malloc(sizeof(char) * 1000);
+
+	if (decryptFlag == 1)
+		RSA_public_decrypt(flen, ciphertext, buff, rsaKey, padding);
+		
+	else
+		RSA_private_decrypt(flen, ciphertext, buff, rsaKey, padding);
+
+	return buff;
+}
 
 	
 /*

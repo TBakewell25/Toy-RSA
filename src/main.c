@@ -48,19 +48,19 @@ int main(int argc, char** argv){
 			//char* fileName = strcat(keyName, "-public.key");
 		
 			RSA* key = readKeyFromFile("OutputPub.pem", 1);
-			char* cipherText = encrypt(key, "Hello, I am testing this", 1);
+			char* cipherText = encrypt(key, "Hi", 1);
 			writeCipherTextToFile(outputFileName, cipherText);
 		}
-		/*
+		
 		if(strcmp("-decrypt", argv[i]) == 0){
 			//char* fileName = strcat(keyName, "-public.key");
 			RSA* key = readKeyFromFile("OutputPriv.pem", 0);
 
-			char* cipherText = readCipherTextFromeFile("output.txt");
-			char*	plaintext = decrypt(key, cipherText);
-			writeCipherTextToFile(outputFileName, cipherText);
+			char* cipherText = readCipherTextFromFile("output.txt");
+			char*	plaintext = decrypt(key, cipherText, 0);
+			writeCipherTextToFile("test.txt", plaintext);
 		}
-	*/
+	
 		if(strcmp("-sign", argv[i]) == 0){
 			char* fileName = strcat(keyName, "-private.key");
 			//char* key = readKeyFromFile(fileName);
@@ -92,11 +92,10 @@ int main(int argc, char** argv){
 			int seed = atoi(argv[++i]);
 			//random.seed(seed); //find c implementation
 		}
-
+		/*
 		else{
 			printf("Unknown parameter: %s, exiting.", argv[i]);
-	
-		}
+		*/	
 
 		i++;
 

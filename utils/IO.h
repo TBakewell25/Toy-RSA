@@ -12,7 +12,7 @@
 
 void* writeCipherTextToFile(void* outputFileName, const char* cipherText);
 
-char* readCipherTextFromeFile(char* inputFileName);
+char* readCipherTextFromFile(char* inputFileName);
 
 void* writeKeyToFile(RSA* key, char* filebasename);
 
