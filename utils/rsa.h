@@ -11,10 +11,10 @@
 #define OPENSSL_API_COMPAT 30000
 #define OPENSSL_NO_DEPRECATED
 
-EVP_PKEY* generateKeys(int bitlength);
+RSA* generateKeys(int bitlength);
 
-char* encrypt(EVP_PKEY* rsaKey, const char* plaintext);
+char* encrypt(RSA* rsaKey, const char* plaintext, const unsigned int flag);
 
-char* decrypt(EVP_PKEY* rsaKey, const char* ciphertext);
+char* decrypt(RSA* rsaKey, const char* ciphertext);
 
 #endif

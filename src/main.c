@@ -41,25 +41,26 @@ int main(int argc, char** argv){
 		if(strcmp("-keygen", argv[i]) == 0){
 			i++;
 			int bitLength = atoi(argv[i]);
-			EVP_PKEY* key = generateKeys(bitLength);
+			RSA* key = generateKeys(bitLength);
 			writeKeyToFile (key, keyName);
 		}
 		if(strcmp("-encrypt", argv[i]) == 0){
 			//char* fileName = strcat(keyName, "-public.key");
 		
-			EVP_PKEY* key = readKeyFromFile("Output.pem");
-			char* cipherText = encrypt(key, "Hello, I am testing this");
+			RSA* key = readKeyFromFile("OutputPub.pem", 1);
+			char* cipherText = encrypt(key, "Hello, I am testing this", 1);
 			writeCipherTextToFile(outputFileName, cipherText);
 		}
-
+		/*
 		if(strcmp("-decrypt", argv[i]) == 0){
 			//char* fileName = strcat(keyName, "-public.key");
-			EVP_PKEY* key = readKeyFromFile("Output.pem");
+			RSA* key = readKeyFromFile("OutputPriv.pem", 0);
 
 			char* cipherText = readCipherTextFromeFile("output.txt");
 			char*	plaintext = decrypt(key, cipherText);
 			writeCipherTextToFile(outputFileName, cipherText);
 		}
+	*/
 		if(strcmp("-sign", argv[i]) == 0){
 			char* fileName = strcat(keyName, "-private.key");
 			//char* key = readKeyFromFile(fileName);

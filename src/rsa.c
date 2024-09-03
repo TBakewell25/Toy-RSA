@@ -8,7 +8,7 @@
 #include "../utils/types.h"
 
 
-
+/*
 OSSL_PARAM* genParams(unsigned int bits){
 	int primes = 3;
 	OSSL_PARAM* params = (OSSL_PARAM*) malloc(sizeof(OSSL_PARAM)*3);
@@ -18,8 +18,39 @@ OSSL_PARAM* genParams(unsigned int bits){
 	return params;
 }
 
+*/
+RSA* generateKeys(unsigned int bitlength){
+	RSA* rsa;
+	BIGNUM* e;
+	
+	rsa = RSA_new();
+	e = BN_new();
+	BN_dec2bn(&e, "3");
+	
+	RSA_generate_key_ex(rsa, bitlength, e, NULL);	
+	BN_free(e);
+	return rsa;
+}
+
+char* encrypt(RSA* rsaKey, const char* plaintext, unsigned int encryptFlag){
+	unsigned int flen, padding = RSA_PKCS1_PADDING;
+	
+	flen = strlen(plaintext) +1;
+	unsigned char* buff = (unsigned char*) malloc(sizeof(char) * 1000);
+
+	if (encryptFlag)
+		RSA_public_encrypt(flen, plaintext, buff, rsaKey, padding);
+		
+	else
+		RSA_private_encrypt(flen, plaintext, buff, rsaKey, padding);
+
+	return buff;
+}
+	
 	
 
+	
+/*
 EVP_PKEY*  generateKeys(int bitlength){
 	EVP_PKEY* pkey = NULL;
 	EVP_PKEY_CTX *pctx = EVP_PKEY_CTX_new_from_name(NULL, "RSA", NULL);
@@ -40,16 +71,16 @@ EVP_PKEY*  generateKeys(int bitlength){
 char* encrypt(EVP_PKEY* rsaKey, const char* plaintext){
 	int len = strlen(plaintext)+1;
 	EVP_PKEY_CTX* ctx;
-	ENGINE* eng;
+	//ENGINE* eng;
 	unsigned const char out[10000];
 	unsigned const char* buffer;
 	size_t* outl;
 
 	buffer = (char*) malloc(sizeof(char)*10000);
 	outl = (size_t*) malloc(sizeof(char) * 10000);
-	eng  = ENGINE_by_id("Wahoowa");
+	//eng  = ENGINE_by_id("Wahoowa");
 
-	ENGINE_init(eng);
+	//ENGINE_init(eng);
 	
 	ctx= EVP_PKEY_CTX_new(rsaKey, NULL);
 	//cipher_t* cipher = (cipher_t*) malloc(sizeof(cipher_t));
@@ -61,19 +92,24 @@ char* encrypt(EVP_PKEY* rsaKey, const char* plaintext){
 	return buffer;
 }
 
+
+
 char* decrypt(EVP_PKEY* rsaKey, const char* ciphertext){
 	int len = strlen(ciphertext)+1;
 	EVP_PKEY_CTX* ctx;
-	ENGINE* eng;
+	//ENGINE* eng;
 	unsigned const char out[10000];
 	unsigned const char* buffer;
 	size_t* outl;
 
+	
+	int EVP_DecryptInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, const unsigned char *key, const unsigned char *iv);
+
 	buffer = (char*) malloc(sizeof(char)*10000);
 	outl = (size_t*) malloc(sizeof(char) * 10000);
-	eng  = ENGINE_by_id("Wahoowa");
+	//eng  = ENGINE_by_id("Wahoowa");
 
-	ENGINE_init(eng);
+	//ENGINE_init(eng);
 	
 	ctx= EVP_PKEY_CTX_new(rsaKey, NULL);
 	//cipher_t* cipher = (cipher_t*) malloc(sizeof(cipher_t));
@@ -88,4 +124,4 @@ char* decrypt(EVP_PKEY* rsaKey, const char* ciphertext){
 	
 
 		
-
+*/

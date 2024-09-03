@@ -14,8 +14,8 @@ void* writeCipherTextToFile(void* outputFileName, const char* cipherText);
 
 char* readCipherTextFromeFile(char* inputFileName);
 
-void* writeKeyToFile(EVP_PKEY* key, char* filebasename);
+void* writeKeyToFile(RSA* key, char* filebasename);
 
-EVP_PKEY* readKeyFromFile(char* filename);
+RSA* readKeyFromFile(char* filename, unsigned int flag);
 	
 #endif

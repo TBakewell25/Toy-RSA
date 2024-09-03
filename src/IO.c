@@ -25,21 +25,34 @@ char* readCipherTextFromeFile(char* inputFileName){
 	return myString;
 }
 
-void writeKeyToFile(EVP_PKEY* rsaKey, char* filebasename){
+void writeKeyToFile(RSA* rsaKey, char* filebasename){
 	//char* filename = strcat(filebasename, "-public.key");
-	FILE* keyFile = fopen("Output.pem", "w");
-	PEM_write_PUBKEY(keyFile, rsaKey);
-	fclose(keyFile);
+	
+	FILE* pubKeyFile = fopen("OutputPub.pem", "w");
+	PEM_write_RSAPublicKey(pubKeyFile, rsaKey);
+	fclose(pubKeyFile);
+		
+	FILE* privKeyFile = fopen("OutputPriv.pem", "w");
+	PEM_write_RSAPrivateKey(privKeyFile, rsaKey, NULL,
+                            NULL, 0,
+         		    NULL , NULL);
+	fclose(privKeyFile);
+	
+	
 }
 
 
 
-EVP_PKEY* readKeyFromFile(char* filename){
+RSA* readKeyFromFile(char* filename, unsigned int flag){
 	FILE* inputFile;
-	EVP_PKEY* key = EVP_PKEY_new();
+	RSA* key = RSA_new();
+	
 	inputFile = fopen(filename, "r");
 	
-	PEM_read_PUBKEY(inputFile, &key, NULL, NULL);	
+	if (flag)	
+		PEM_read_RSAPublicKey(inputFile, &key, NULL, NULL);
+	else
+		PEM_read_RSAPrivateKey(inputFile, &key, NULL, NULL);
 	fclose(inputFile);
 	return key;
 }
