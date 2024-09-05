@@ -5,7 +5,6 @@
 #include <openssl/rsa.h>
 #include <openssl/bn.h>
 #include <openssl/engine.h>
-#include <openssl/evp.h>
 
 void writeCipherTextToFile(char* outputFileName, const char* cipherText){
 	FILE* outputFile = fopen(outputFileName, "w");
@@ -13,20 +12,23 @@ void writeCipherTextToFile(char* outputFileName, const char* cipherText){
 	fclose(outputFile);
 }
 
-
-char* readCipherTextFromFile(char* inputFileName){
+cipher_t* readCipherTextFromFile(char* inputFileName){
 	FILE* inputFile;
 	size_t buff_size;
 	char* myString;
+	cipher_t* cipher;
 
+	cipher = (cipher_t*) malloc(sizeof(cipher_t));
 	myString = (char*) malloc(sizeof(char)*1024);	
 	buff_size = 1024;
 
 	inputFile = fopen(inputFileName, "r");
 	fgets(myString, 1024, inputFile);
 	fclose(inputFile); 
+	cipher->c = myString;	
+	free(myString);	
 	
-	return myString;
+	return cipher;
 }
 
 void writeKeyToFile(rsakey_t* key, char* filebasename){
@@ -43,17 +45,31 @@ void writeKeyToFile(rsakey_t* key, char* filebasename){
 
 
 
-RSA* readKeyFromFile(char* filename, unsigned int flag){
+rsakey_t* readKeyFromFile(char* filename, unsigned int flag){
 	FILE* inputFile;
-	RSA* key = RSA_new();
+	rsakey_t* key;
+	char* text[4];
+	int i = 0, j;
 	
 	inputFile = fopen(filename, "r");
+	key =(rsakey_t*) malloc(sizeof(rsakey_t));
+	for (j = 0; i < 4; i++){
+		text[i] = (char*) malloc(sizeof(char));	
+		fgets(text[i], 100, inputFile);
+		text[i][strcspn(text[i], "\n")] = 0;
+	}	
 	
-	if (flag)	
-		PEM_read_RSAPublicKey(inputFile, &key, NULL, NULL);
-	else
-		PEM_read_RSAPrivateKey(inputFile, &key, NULL, NULL);
+	if (!(strcmp((char*)text[0], "public")))
+		key->e = atoi(text[2]);
+	
+	if (!(strcmp((char*)text[0], "private")))
+		key->d = atoi(text[2]);
+
+	key->l = atoi(text[1]);
+	key->n = atoi(text[3]);
+	
 	fclose(inputFile);
+	
 	return key;
 }
 

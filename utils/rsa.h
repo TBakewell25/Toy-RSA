@@ -14,8 +14,8 @@
 
 rsakey_t* generateKeys(int bitlength);
 
-unsigned char* encrypt(rsakey_t* rsaKey, const unsigned char* plaintext);
+cipher_t* encrypt(rsakey_t* rsaKey, const unsigned char* plaintext);
 
-unsigned char* decrypt(rsakey_t* rsaKey, const unsigned char* ciphertext);
+unsigned char* decrypt(rsakey_t* rsaKey, cipher_t* cipher);
 
 #endif

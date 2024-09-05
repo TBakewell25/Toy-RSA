@@ -43,24 +43,23 @@ int main(int argc, char** argv){
 			int bitLength = atoi(argv[i]);
 			rsakey_t* key = generateKeys(bitLength);
 			writeKeyToFile (key, keyName);
-		}/*
+		}
 		if(strcmp("-encrypt", argv[i]) == 0){
 			//char* fileName = strcat(keyName, "-public.key");
 		
-			RSA* key = readKeyFromFile("OutputPub.pem", 1);
-			char* cipherText = encrypt(key, "Hi", 1);
-			writeCipherTextToFile(outputFileName, cipherText);
+			rsakey_t* key = readKeyFromFile("Name-public.key");
+			cipher_t* cipherText = encrypt(key, "Hello, testing my encryption!");
+			writeCipherTextToFile(outputFileName, cipherText->c);
 		}
-		
 		if(strcmp("-decrypt", argv[i]) == 0){
 			//char* fileName = strcat(keyName, "-public.key");
-			RSA* key = readKeyFromFile("OutputPriv.pem", 0);
+			rsakey_t* key = readKeyFromFile("Name-public.key");
 
-			char* cipherText = readCipherTextFromFile("output.txt");
-			char*	plaintext = decrypt(key, cipherText, 0);
+			cipher_t* cipherText = readCipherTextFromFile("output.txt");
+			char* plaintext = decrypt(key, cipherText);
 			writeCipherTextToFile("test.txt", plaintext);
 		}
-	
+		/*	
 		if(strcmp("-sign", argv[i]) == 0){
 			char* fileName = strcat(keyName, "-private.key");
 			//char* key = readKeyFromFile(fileName);

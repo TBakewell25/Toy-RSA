@@ -12,10 +12,10 @@
 
 void* writeCipherTextToFile(void* outputFileName, const char* cipherText);
 
-char* readCipherTextFromFile(char* inputFileName);
+cipher_t* readCipherTextFromFile(char* inputFileName);
 
 void* writeKeyToFile(rsakey_t* key, char* filebasename);
 
-rsakey_t* readKeyFromFile(char* filename, unsigned int flag);
+rsakey_t* readKeyFromFile(char* filename);
 	
 #endif

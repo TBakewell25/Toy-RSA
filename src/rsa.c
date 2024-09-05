@@ -5,6 +5,26 @@
 #include <stdlib.h>
 #include <time.h>
 #include "../utils/types.h"
+#include<unistd.h>
+
+
+int power(int x, int y, int p){
+    int res = 1;
+    while (y > 0) {
+        if (y % 2 == 1)
+            res = (res * x);
+        y = y >> 1;
+        x = (x * x);
+    }
+    return res % p;
+}
+
+int mod_inverse(int A, int M){
+    for (int X = 1; X < M; X++)
+        if (((A % M) * (X % M)) % M == 1)
+            return X;
+}
+
 
 int findPrime(int* list,int size){
 	int i, count = 0;
@@ -17,8 +37,7 @@ int findPrime(int* list,int size){
 }	
 
 int eratos(int target){
-	srand(time(NULL));
-	int *prime, *primeList, n, j;
+	int *prime, *primeList, n, j, rand_ind, ret, counter;
 	
 	prime = (int*) malloc(sizeof(int) * (target+1));	
 	memset(prime, 0, sizeof(int)* (target+1));
@@ -32,7 +51,7 @@ int eratos(int target){
 	n = findPrime(prime, target+1);
 
 	primeList = (int*) malloc(sizeof(int) * n);
-	int counter = 0;
+	counter = 0;
 	while (counter < n){	
 		for (j = 0; j < target; j++){
 			if (prime[j] == 0){
@@ -42,26 +61,26 @@ int eratos(int target){
 		}
 	}
 
-	int rand_ind = (rand() % (counter));
-	int ret = primeList[rand_ind];
+	rand_ind = (rand() % (counter));
+	ret = primeList[rand_ind];
 	free(prime);
 	free(primeList);
 	return ret;
 }
 	
 rsakey_t* generateKeys(unsigned int bitlength){
+	srand(time(NULL));
 	unsigned int p, q, e, d;
 	long n;
 	rsakey_t* key;
-	size_t block_length;
 	
 	p = eratos(bitlength);
 	q = eratos(bitlength);
-
+	
 	n = p * q;
 	
 	e = eratos(bitlength);
-	d = fmod(pow(e, -1), ((p-1) * (q-1)));
+	d = mod_inverse(e, ((q-1) * (p-1)));
 	
 	if (!(key = (rsakey_t*) malloc(sizeof(rsakey_t)))){
 		printf("BAD MALLOC");
@@ -77,33 +96,27 @@ rsakey_t* generateKeys(unsigned int bitlength){
 }
 
 cipher_t* encrypt(rsakey_t* key, char* plaintext){
-	unsigned int blocksize, text_len, i;
-	int encrypted, e, n, **blocks;
-	int* letter;
+	int blocksize = strlen(plaintext);
+	unsigned int i;
+	int encrypted, e, n, letter, cryptext[blocksize];
 	cipher_t* cipher;
+	char blocks[blocksize];
 
 	e = key->e;
 	n = key->n;
-
-	blocksize = strlen(plaintext);
-
-	if ((blocks = malloc(sizeof(int*)*blocksize)) != 0){
-		printf("BAD MALLOC");
-		return NULL;
-	}
-
-	if ((cipher = malloc(sizeof(cipher_t))) != 0){
+	
+	if (!(cipher = malloc(sizeof(cipher_t)))){
 		printf("BAD MALLOC");
 		return NULL;
 	}
 
 	for (i = 0; i < blocksize; i++){
-		letter = (int*) plaintext[i];
-		encrypted = fmod(pow(*letter, e) , (long)n);
-		blocks[i] = letter;
+		memcpy(&blocks[i], &plaintext[i], sizeof(char));
+		letter = (int)blocks[i];
+		cryptext[i] = power( letter, e, n);
 	}
 
-	cipher->c = (char*) *blocks;
+	cipher->c = (char*) blocks;
 	cipher->l = blocksize;
 	cipher->b = blocksize;
 
@@ -122,7 +135,7 @@ char* decrypt(rsakey_t* key, cipher_t* cipher){
 	n = key->n;
 
 	for (i = 0; i < blocks; i++)
-		decoded[i] = fmod(pow(encrypted[i], d), n);
+		decoded[i] = power(encrypted[i], d, n);
 
 	return decoded;
 }
