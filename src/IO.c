@@ -29,18 +29,14 @@ char* readCipherTextFromFile(char* inputFileName){
 	return myString;
 }
 
-void writeKeyToFile(rsakey_t* rsaKey, char* filebasename){
-	printf("\nTEST\n");
-	/*
-	FILE* pubKeyFile = fopen("OutputPub.txt", "w");
-	fprintf(pubKeyFile, rsaKey->d);
+void writeKeyToFile(rsakey_t* key, char* filebasename){
+	FILE* pubKeyFile = fopen("Name-public.key", "w");
+	fprintf(pubKeyFile, "public\n%d\n%d\n%ld\n",key->l, key->e, key->n);
 	fclose(pubKeyFile);
-	FILE* privKeyFile = fopen("OutputPriv.pem", "w");
-	PEM_write_RSAPrivateKey(privKeyFile, rsaKey, NULL,
-                            NULL, 0,
-         		    NULL , NULL);
+	
+	FILE* privKeyFile = fopen("Name-private.key", "w");
+	fprintf(privKeyFile, "private\n%ld\n%d\n%ld\n",key->l, key->d, key->n);
 	fclose(privKeyFile);
-	*/
 	
 	
 }
