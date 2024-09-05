@@ -41,9 +41,9 @@ int main(int argc, char** argv){
 		if(strcmp("-keygen", argv[i]) == 0){
 			i++;
 			int bitLength = atoi(argv[i]);
-			RSA* key = generateKeys(bitLength);
+			rsakey_t* key = generateKeys(bitLength);
 			writeKeyToFile (key, keyName);
-		}
+		}/*
 		if(strcmp("-encrypt", argv[i]) == 0){
 			//char* fileName = strcat(keyName, "-public.key");
 		
@@ -92,7 +92,7 @@ int main(int argc, char** argv){
 			int seed = atoi(argv[++i]);
 			//random.seed(seed); //find c implementation
 		}
-		/*
+		
 		else{
 			printf("Unknown parameter: %s, exiting.", argv[i]);
 		*/	

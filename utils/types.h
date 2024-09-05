@@ -2,10 +2,10 @@
 #define TYPES_H
 
 typedef struct {
-	unsigned int* bit_length;
-	char* public_key;
-	char* private_key;
-	int* modulus;
+	unsigned int* l;
+	unsigned int* e;
+	unsigned int* d;
+	unsigned long* n;
 }rsakey_t;
 
 typedef struct {

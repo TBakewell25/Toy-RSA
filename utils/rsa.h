@@ -6,7 +6,8 @@
 #include <openssl/engine.h>
 #include "types.h"
 #include <stddef.h>
-
+#include <stdlib.h>
+#include <math.h>
 
 #define OPENSSL_API_COMPAT 30000
 #define OPENSSL_NO_DEPRECATED
