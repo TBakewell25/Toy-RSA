@@ -6,11 +6,13 @@
 #include <openssl/bn.h>
 #include <openssl/engine.h>
 
-void writeCipherTextToFile(char* outputFileName, const char* cipherText){
+void writeCipherTextToFile(char* outputFileName, int* cipherText, unsigned int blocksize){
 	int i = 0;
+	char* letter, buff[50];
 	FILE* outputFile = fopen(outputFileName, "w");
-	while (cipherText[i] != 0){
-		fprintf(outputFile, cipherText);
+	while (i < blocksize-1){
+		sprintf(buff, "%d", cipherText[i]);
+		fprintf(outputFile, "%s ", buff);
 		i++;
 	}
 	fclose(outputFile);
@@ -19,15 +21,15 @@ void writeCipherTextToFile(char* outputFileName, const char* cipherText){
 cipher_t* readCipherTextFromFile(char* inputFileName){
 	FILE* inputFile;
 	size_t buff_size;
-	char* myString;
+	unsigned int* myString;
 	cipher_t* cipher;
 
 	cipher = (cipher_t*) malloc(sizeof(cipher_t));
-	myString = (char*) malloc(sizeof(char)*1024);	
+	myString = (int*) malloc(sizeof(int)*1024);	
 	buff_size = 1024;
 
 	inputFile = fopen(inputFileName, "r");
-	fgets(myString, 1024, inputFile);
+	fgets((unsigned char*)myString, 1024, inputFile);
 	fclose(inputFile); 
 	cipher->c = myString;	
 	free(myString);	

@@ -8,7 +8,7 @@
 #include<unistd.h>
 
 
-int power(int x, int y, int p){
+unsigned int power(unsigned int x, unsigned int y, unsigned int p){
     int res = 1;
     while (y > 0) {
         if (y % 2 == 1)
@@ -97,10 +97,10 @@ rsakey_t* generateKeys(unsigned int bitlength){
 
 cipher_t* encrypt(rsakey_t* key, char* plaintext){
 	int blocksize = strlen(plaintext);
-	unsigned int i,  cryptext[blocksize];
-	int encrypted, e, n, letter, l;
+	int i,  cryptext[blocksize];
+	unsigned int encrypted, e, n, letter, l;
 	cipher_t* cipher;
-	char buff[blocksize];
+	int *buff;
 
 	e = key->e;
 	n = key->n;
@@ -109,12 +109,20 @@ cipher_t* encrypt(rsakey_t* key, char* plaintext){
 		printf("BAD MALLOC");
 		return NULL;
 	}
+	if (!(buff = malloc(sizeof(int)*(blocksize+1)))){
+		printf("BAD MALLOC");
+		return NULL;
+	}
 
 	for (i = 0; i < blocksize; i++){
 		letter = (int)plaintext[i];
-		cryptext[i] = power(letter, e, n);
-		sprintf(&buff[i],"%d", cryptext[i]); 
+		//l = power(letter, e, n);
+		l = fmod(pow(letter, e), n);
+		printf("\n%d", l);
+		buff[i] = l;
 	}
+
+	buff[blocksize] = 0xFFFE;
 	
 	cipher->c = buff;
  	cipher->l = blocksize;
