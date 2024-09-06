@@ -3,7 +3,7 @@
 # Compiler and flags
 CC = gcc
 CFLAGS = -Wall -g -Wextra -I./utils -I./src
-LDFLAGS = -lssl -lcrypto
+LDFLAGS = -lssl -lcrypto -lm
 OBJDIR = ./obj
 BINDIR = ./bins
 
