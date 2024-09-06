@@ -8,7 +8,7 @@
 #include<unistd.h>
 
 
-int power(int x, int y, int p){
+unsigned int power(unsigned int x, unsigned int y, unsigned int p){
     int res = 1;
     while (y > 0) {
         if (y % 2 == 1)
@@ -97,10 +97,10 @@ rsakey_t* generateKeys(unsigned int bitlength){
 
 cipher_t* encrypt(rsakey_t* key, char* plaintext){
 	int blocksize = strlen(plaintext);
-	unsigned int i;
-	int encrypted, e, n, letter, cryptext[blocksize];
+	int i,  cryptext[blocksize];
+	unsigned int encrypted, e, n, letter, l;
 	cipher_t* cipher;
-	char blocks[blocksize];
+	int *buff;
 
 	e = key->e;
 	n = key->n;
@@ -109,23 +109,30 @@ cipher_t* encrypt(rsakey_t* key, char* plaintext){
 		printf("BAD MALLOC");
 		return NULL;
 	}
-
-	for (i = 0; i < blocksize; i++){
-		memcpy(&blocks[i], &plaintext[i], sizeof(char));
-		letter = (int)blocks[i];
-		cryptext[i] = power( letter, e, n);
-		sprintf(&blocks[i], "%d", cryptext[i]);		
+	if (!(buff = malloc(sizeof(int)*(blocksize+1)))){
+		printf("BAD MALLOC");
+		return NULL;
 	}
 
-	cipher->c = blocks;
-	cipher->l = blocksize;
+	for (i = 0; i < blocksize; i++){
+		letter = (int)plaintext[i];
+		//l = power(letter, e, n);
+		l = fmod(pow(letter, e), n);
+		printf("\n%d", l);
+		buff[i] = l;
+	}
+
+	buff[blocksize] = 0xFFFE;
+	
+	cipher->c = buff;
+ 	cipher->l = blocksize;
 	cipher->b = blocksize;
 
 	return cipher;
 }
-
+/*
 char* decrypt(rsakey_t* key, cipher_t* cipher){
-	char* encrypted;
+	int* encrypted;
 	int blocks, i, n, d;
 	char decoded[256];
 	
@@ -141,14 +148,5 @@ char* decrypt(rsakey_t* key, cipher_t* cipher){
 	return decoded;
 }
 		
-					
-
-	
-	
-
-	
-
-	
-
-	
+*/					
 

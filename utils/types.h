@@ -9,7 +9,7 @@ typedef struct {
 }rsakey_t;
 
 typedef struct {
-	unsigned char* c;
+	unsigned int* c;
 	int l;
 	int b;
 }cipher_t;
