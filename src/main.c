@@ -51,6 +51,7 @@ int main(int argc, char** argv){
 			cipher_t* cipherText = encrypt(key, "Hello, testing my encryption!");
 			writeCipherTextToFile(outputFileName, cipherText->c);
 		}
+	/*
 		if(strcmp("-decrypt", argv[i]) == 0){
 			//char* fileName = strcat(keyName, "-public.key");
 			rsakey_t* key = readKeyFromFile("Name-public.key");
@@ -59,7 +60,7 @@ int main(int argc, char** argv){
 			char* plaintext = decrypt(key, cipherText);
 			writeCipherTextToFile("test.txt", plaintext);
 		}
-		/*	
+	*/	/*	
 		if(strcmp("-sign", argv[i]) == 0){
 			char* fileName = strcat(keyName, "-private.key");
 			//char* key = readKeyFromFile(fileName);

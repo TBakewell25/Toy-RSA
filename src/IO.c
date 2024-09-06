@@ -7,8 +7,12 @@
 #include <openssl/engine.h>
 
 void writeCipherTextToFile(char* outputFileName, const char* cipherText){
+	int i = 0;
 	FILE* outputFile = fopen(outputFileName, "w");
-	fprintf(outputFile, cipherText);
+	while (cipherText[i] != 0){
+		fprintf(outputFile, cipherText);
+		i++;
+	}
 	fclose(outputFile);
 }
 

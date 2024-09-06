@@ -97,10 +97,10 @@ rsakey_t* generateKeys(unsigned int bitlength){
 
 cipher_t* encrypt(rsakey_t* key, char* plaintext){
 	int blocksize = strlen(plaintext);
-	unsigned int i;
-	int encrypted, e, n, letter, cryptext[blocksize];
+	unsigned int i,  cryptext[blocksize];
+	int encrypted, e, n, letter, l;
 	cipher_t* cipher;
-	char blocks[blocksize];
+	char buff[blocksize];
 
 	e = key->e;
 	n = key->n;
@@ -111,20 +111,20 @@ cipher_t* encrypt(rsakey_t* key, char* plaintext){
 	}
 
 	for (i = 0; i < blocksize; i++){
-		memcpy(&blocks[i], &plaintext[i], sizeof(char));
-		letter = (int)blocks[i];
-		cryptext[i] = power( letter, e, n);
+		letter = (int)plaintext[i];
+		cryptext[i] = power(letter, e, n);
+		sprintf(&buff[i],"%d", cryptext[i]); 
 	}
-
-	cipher->c = (char*) blocks;
-	cipher->l = blocksize;
+	
+	cipher->c = buff;
+ 	cipher->l = blocksize;
 	cipher->b = blocksize;
 
 	return cipher;
 }
-
+/*
 char* decrypt(rsakey_t* key, cipher_t* cipher){
-	char* encrypted;
+	int* encrypted;
 	int blocks, i, n, d;
 	char decoded[256];
 	
@@ -140,14 +140,5 @@ char* decrypt(rsakey_t* key, cipher_t* cipher){
 	return decoded;
 }
 		
-					
-
-	
-	
-
-	
-
-	
-
-	
+*/					
 
