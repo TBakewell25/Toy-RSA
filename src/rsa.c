@@ -114,9 +114,10 @@ cipher_t* encrypt(rsakey_t* key, char* plaintext){
 		memcpy(&blocks[i], &plaintext[i], sizeof(char));
 		letter = (int)blocks[i];
 		cryptext[i] = power( letter, e, n);
+		sprintf(&blocks[i], "%d", cryptext[i]);		
 	}
 
-	cipher->c = (char*) blocks;
+	cipher->c = blocks;
 	cipher->l = blocksize;
 	cipher->b = blocksize;
 
