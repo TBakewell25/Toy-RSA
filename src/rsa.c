@@ -26,8 +26,8 @@ int mod_inverse(int A, int M){
 }
 
 
-int findPrime(int* list,int size){
-	int i, count = 0;
+int findPrime(BIGNUM* list,int size){
+	BIGNUM i, count = 0;
 
 	for (i = 0; i < size;i++){
 		if (list[i] == 0)
@@ -36,21 +36,23 @@ int findPrime(int* list,int size){
 	return count;
 }	
 
-int eratos(int target){
-	int *prime, *primeList, n, j, rand_ind, ret, counter;
-	
-	prime = (int*) malloc(sizeof(int) * (target+1));	
-	memset(prime, 0, sizeof(int)* (target+1));
 
-	for (int p = 2; p * p <= (target); p++) {
+
+/*int eratos(BIGNUM target){
+	BIGNUM *prime, *primeList, n, j, rand_ind, ret, counter;
+	
+	prime = (BIGNUM*) malloc(sizeof(BIGNUM) * (target+1));	
+	memset(prime, 0, sizeof(BIGNUM)* (target+1));
+
+	for (BIGNUM p = 2; p * p <= (target); p++) {
         	if (prime[p] == 0) {
-            		for (int i = p * p; i <= target; i += p)
+            		for (BIGNUM i = p * p; i <= target; i += p)
                 		prime[i] = 1;
         	}
 	}
 	n = findPrime(prime, target+1);
 
-	primeList = (int*) malloc(sizeof(int) * n);
+	primeList = (BIGNUM*) malloc(sizeof(BIGNUM) * n);
 	counter = 0;
 	while (counter < n){	
 		for (j = 0; j < target; j++){
@@ -68,14 +70,17 @@ int eratos(int target){
 	return ret;
 }
 	
-rsakey_t* generateKeys(unsigned int bitlength){
+rsakey_t* generateKeys(BIGNUM bitlength){
 	srand(time(NULL));
-	unsigned int p, q, e, d;
-	long n;
+	unsigned int p, q, e, d, size;
+	BIGNUM n;
 	rsakey_t* key;
-	
-	p = eratos(bitlength);
-	q = eratos(bitlength);
+
+	n = 
+	size = bitlength / 3.321928;
+
+	p = eratos(pow(10, size));
+	q = eratos(pow(10, size));
 	
 	n = p * q;
 	
@@ -95,12 +100,38 @@ rsakey_t* generateKeys(unsigned int bitlength){
 	return key;
 }
 
+int* encode(int* ascii, int blocksize, int n, int e, unsigned int size){
+	int i, num, retBuff[50], tmp, l, j = 0;
+	char *combo, curr[5], next[5], full[size+1]; 
+	
+	while(j <= blocksize){
+		sprintf(curr, "%d", ascii[j]);	
+		if (j <= blocksize-1)
+			sprintf(next, "%d", ascii[j+1]);	
+		strcat(curr, next);
+		strcat(full, curr);
+		j= j + 2;
+	}
+	i = 0;
+	while (i < sizeof(full)){
+		combo = strtok(full, &full[j+blocksize]);
+		tmp = atoi(combo);
+		l = fmod(pow(tmp, e), n);
+		j = j + blocksize;
+		retBuff[j%blocksize];
+	}
+
+	return retBuff;
+}
+				
+	
+
 cipher_t* encrypt(rsakey_t* key, char* plaintext){
 	int blocksize = strlen(plaintext);
 	int i,  cryptext[blocksize];
 	unsigned int encrypted, e, n, letter, l;
 	cipher_t* cipher;
-	int *buff;
+	int *buff, *encoded;
 
 	e = key->e;
 	n = key->n;
@@ -117,12 +148,11 @@ cipher_t* encrypt(rsakey_t* key, char* plaintext){
 	for (i = 0; i < blocksize; i++){
 		letter = (int)plaintext[i];
 		//l = power(letter, e, n);
-		l = fmod(pow(letter, e), n);
-		printf("\n%d", l);
-		buff[i] = l;
+		//l = fmod(pow(letter, e), n);
+		buff[i] = letter;
 	}
-
-	buff[blocksize] = 0xFFFE;
+	
+	encoded = encode(buff, 3, n, e, blocksize-1); 
 	
 	cipher->c = buff;
  	cipher->l = blocksize;

@@ -54,7 +54,7 @@ int main(int argc, char** argv){
 	/*
 		if(strcmp("-decrypt", argv[i]) == 0){
 			//char* fileName = strcat(keyName, "-public.key");
-			rsakey_t* key = readKeyFromFile("Name-public.key");
+			rsakey_t* key = readKeyFromFile("Name-private.key");
 
 			cipher_t* cipherText = readCipherTextFromFile("output.txt");
 			char* plaintext = decrypt(key, cipherText);

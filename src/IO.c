@@ -21,17 +21,17 @@ void writeCipherTextToFile(char* outputFileName, int* cipherText, unsigned int b
 cipher_t* readCipherTextFromFile(char* inputFileName){
 	FILE* inputFile;
 	size_t buff_size;
-	unsigned int* myString;
+	unsigned char* myString;
 	cipher_t* cipher;
 
 	cipher = (cipher_t*) malloc(sizeof(cipher_t));
-	myString = (int*) malloc(sizeof(int)*1024);	
+	myString = malloc(sizeof(char)*1024);	
 	buff_size = 1024;
 
 	inputFile = fopen(inputFileName, "r");
-	fgets((unsigned char*)myString, 1024, inputFile);
+	fgets(myString, 1024, inputFile);
 	fclose(inputFile); 
-	cipher->c = myString;	
+	cipher->c =(int*) myString;	
 	free(myString);	
 	
 	return cipher;
