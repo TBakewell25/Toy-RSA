@@ -39,17 +39,30 @@ cipher_t* readCipherTextFromFile(char* inputFileName){
 
 void writeKeyToFile(rsakey_t* key, char* filebasename){
 	FILE* pubKeyFile = fopen("Name-public.key", "w");
-	fprintf(pubKeyFile, "public\n%d\n%d\n%ld\n",key->l, key->e, key->n);
+	fprintf(pubKeyFile, "public\n%d\n", key->l);
+	
+	
+	mpz_out_str(pubKeyFile, 10, key->e);
+	fprintf(pubKeyFile, "\n\n");
+
+	mpz_out_str(pubKeyFile, 10, key->n);
+
 	fclose(pubKeyFile);
 	
 	FILE* privKeyFile = fopen("Name-private.key", "w");
-	fprintf(privKeyFile, "private\n%ld\n%d\n%ld\n",key->l, key->d, key->n);
+	
+	fprintf(privKeyFile, "private\n%d\n", key->l);
+	
+	mpz_out_str(privKeyFile, 10, key->d);
+	fprintf(pubKeyFile, "\n\n", key->l);
+	mpz_out_str(privKeyFile, 10, key->n);
+
 	fclose(privKeyFile);
 	
 	
 }
 
-
+/*
 
 rsakey_t* readKeyFromFile(char* filename, unsigned int flag){
 	FILE* inputFile;
@@ -78,4 +91,4 @@ rsakey_t* readKeyFromFile(char* filename, unsigned int flag){
 	
 	return key;
 }
-
+*/

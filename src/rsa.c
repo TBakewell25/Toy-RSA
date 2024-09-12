@@ -6,7 +6,7 @@
 #include <time.h>
 #include "../utils/types.h"
 #include<unistd.h>
-
+#include <gmp.h>
 
 unsigned int power(unsigned int x, unsigned int y, unsigned int p){
     int res = 1;
@@ -25,81 +25,94 @@ int mod_inverse(int A, int M){
             return X;
 }
 
+void init_key(rsakey_t* Key){
+	mpz_init(Key->e);
+	mpz_init(Key->d);
+	mpz_init(Key->n);
+}
 
-int findPrime(BIGNUM* list,int size){
-	BIGNUM i, count = 0;
+void fill_key(unsigned long l, mpz_t e, mpz_t d, mpz_t n, rsakey_t* key){
+	key->l = l;	
 
-	for (i = 0; i < size;i++){
-		if (list[i] == 0)
-			count++;
-	}
-	return count;
-}	
+	mpz_set(key->e, e);
+	mpz_set(key->d, d);
+	mpz_set(key->n, n);
+}
 
-
-
-/*int eratos(BIGNUM target){
-	BIGNUM *prime, *primeList, n, j, rand_ind, ret, counter;
+void generate_prime(int bits, int k, mpz_t result){
+	int count, iterations, i;
+	mpz_t n, a, num, tmp, j, l;
 	
-	prime = (BIGNUM*) malloc(sizeof(BIGNUM) * (target+1));	
-	memset(prime, 0, sizeof(BIGNUM)* (target+1));
+	gmp_randstate_t state;
+    	gmp_randinit_default(state);  // Initialize state
+	
+	mpz_init(n);
+	mpz_init(a);
+	mpz_init(num);
+	mpz_init(tmp);
+	mpz_init(j);
+	mpz_init(l);
 
-	for (BIGNUM p = 2; p * p <= (target); p++) {
-        	if (prime[p] == 0) {
-            		for (BIGNUM i = p * p; i <= target; i += p)
-                		prime[i] = 1;
-        	}
-	}
-	n = findPrime(prime, target+1);
 
-	primeList = (BIGNUM*) malloc(sizeof(BIGNUM) * n);
-	counter = 0;
-	while (counter < n){	
-		for (j = 0; j < target; j++){
-			if (prime[j] == 0){
-				primeList[counter] = j;
-				counter++;
-			}
+	count = 0;
+	while (1){
+		mpz_urandomb(n, state, bits);
+		mpz_mod_ui(l, n, 2);
+		if (mpz_cmp_ui(l, 0) == 0)
+			mpz_add_ui(n, n, 1);
+		count++;
+		iterations = 0;
+		for (i = 0; i < k; i++){
+			mpz_urandomb(a, state, 200);
+			mpz_sub_ui(tmp, n, 1);	
+			mpz_powm(j, a, tmp, n);
+			if (mpz_cmp_ui(j, 1) != 0)
+				break;
+			else
+				iterations++;
+		}
+		if (iterations == k){
+			mpz_set(result, n);
+			return;
 		}
 	}
-
-	rand_ind = (rand() % (counter));
-	ret = primeList[rand_ind];
-	free(prime);
-	free(primeList);
-	return ret;
 }
-	
-rsakey_t* generateKeys(BIGNUM bitlength){
-	srand(time(NULL));
-	unsigned int p, q, e, d, size;
-	BIGNUM n;
+
+rsakey_t* generateKeys(int bitlength){
+	mpz_t n, p ,q, e, d;
+
+	mpz_init(n);
+	mpz_init(p);
+	mpz_init(q);
+	mpz_init(e);
+	mpz_init(d);
+
 	rsakey_t* key;
 
-	n = 
-	size = bitlength / 3.321928;
+	generate_prime(bitlength, 10, p);
+	generate_prime(bitlength, 10, q);
+	
+	mpz_mul(n, p, q);
+	generate_prime(bitlength, 10, e);
 
-	p = eratos(pow(10, size));
-	q = eratos(pow(10, size));
+	while(mpz_cmp(e, n) >=  0)	
+		generate_prime(200, 10, e);
 	
-	n = p * q;
-	
-	e = eratos(bitlength);
-	d = mod_inverse(e, ((q-1) * (p-1)));
+	mpz_powm_ui(d, e, -1, n); 
 	
 	if (!(key = (rsakey_t*) malloc(sizeof(rsakey_t)))){
 		printf("BAD MALLOC");
 		return NULL;
 	}
 
-	key->l = bitlength;
-	key->e = e;
-	key->d = d;
-	key->n = n;
+	init_key(key);
+	fill_key(bitlength, e, d, n, key);
 	
 	return key;
 }
 
+
+/*
 int* encode(int* ascii, int blocksize, int n, int e, unsigned int size){
 	int i, num, retBuff[50], tmp, l, j = 0;
 	char *combo, curr[5], next[5], full[size+1]; 
@@ -160,7 +173,6 @@ cipher_t* encrypt(rsakey_t* key, char* plaintext){
 
 	return cipher;
 }
-/*
 char* decrypt(rsakey_t* key, cipher_t* cipher){
 	int* encrypted;
 	int blocks, i, n, d;
@@ -178,5 +190,4 @@ char* decrypt(rsakey_t* key, cipher_t* cipher){
 	return decoded;
 }
 		
-*/					
-
+*/

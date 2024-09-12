@@ -1,11 +1,11 @@
 #ifndef TYPES_H
 #define TYPES_H
-
+#include <gmp.h>
 typedef struct {
 	unsigned int l;
-	unsigned int e;
-	unsigned int d;
-	unsigned long n;
+	mpz_t e;
+	mpz_t d;
+	mpz_t  n;
 }rsakey_t;
 
 typedef struct {
