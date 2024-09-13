@@ -27,15 +27,9 @@ void generate_prime(int bits, int k, mpz_t result){
 	mpz_t n, a, num, tmp, j, l;
 	
 	gmp_randstate_t state;
-    	gmp_randinit_default(state);  // Initialize state
+    	gmp_randinit_mt(state);  // Initialize state
 	
-	mpz_init(n);
-	mpz_init(a);
-	mpz_init(num);
-	mpz_init(tmp);
-	mpz_init(j);
-	mpz_init(l);
-
+	mpz_inits(n, a, num, tmp, j, l, NULL);
 
 	count = 0;
 	while (1){
@@ -61,25 +55,46 @@ void generate_prime(int bits, int k, mpz_t result){
 	}
 }
 
+/*
+void generate_prime(int bits, int k, mpz_t result){
+	mpz_t prime;
+
+	mpz_init(prime);	
+	gmp_randstate_t state;
+    	gmp_randinit_mt(state);  // Initialize state
+
+
+	while(1){
+     		mpz_urandomb(prime, state, bits);
+     		if (!mpz_probab_prime_p(prime, 50))
+          		break;
+	}
+	mpz_set(result, prime);
+
+}
+
+*/
+
+
 rsakey_t* generateKeys(int bitlength){
-	mpz_t n, p ,q, e, d;
+	mpz_t p ,q, e, d, n;
 
-	mpz_init(n);
-	mpz_init(p);
-	mpz_init(q);
-	mpz_init(e);
-	mpz_init(d);
-
+	mpz_inits(n, p, q, e, d,  NULL);
+	
 	rsakey_t* key;
 
-	generate_prime(bitlength, 10, p);
-	generate_prime(bitlength, 10, q);
+	generate_prime(bitlength, 50, p);
+	generate_prime(bitlength, 50, q);
 	
+		
 	mpz_mul(n, p, q);
-	generate_prime(bitlength, 10, e);
 
-	while(mpz_cmp(e, n) >=  0)	
-	mpz_powm_ui(d, e, -1, n); 
+	generate_prime(bitlength, 50, e);
+	
+	mpz_nextprime(n ,n);	
+	mpz_invert(d, e, n);
+	gmp_printf("%Zd\n", d);
+
 	
 	if (!(key = (rsakey_t*) malloc(sizeof(rsakey_t)))){
 		printf("BAD MALLOC");
@@ -181,42 +196,7 @@ cipher_t* encrypt(rsakey_t* key, char* plaintext){
 	
 
 	
-
-/*	
-cipher_t* encrypt(rsakey_t* key, char* plaintext){
-	int blocksize = strlen(plaintext);
-	int i,  cryptext[blocksize];
-	unsigned int encrypted, e, n, letter, l;
-	cipher_t* cipher;
-	int *buff, *encoded;
-
-	e = key->e;
-	n = key->n;
-	
-	if (!(cipher = malloc(sizeof(cipher_t)))){
-		printf("BAD MALLOC");
-		return NULL;
-	}
-	if (!(buff = malloc(sizeof(int)*(blocksize+1)))){
-		printf("BAD MALLOC");
-		return NULL;
-	}
-
-	for (i = 0; i < blocksize; i++){
-		letter = (int)plaintext[i];
-		//l = power(letter, e, n);
-		//l = fmod(pow(letter, e), n);
-		buff[i] = letter;
-	}
-	
-	encoded = encode(buff, 3, n, e, blocksize-1); 
-	
-	cipher->c = buff;
- 	cipher->l = blocksize;
-	cipher->b = blocksize;
-
-	return cipher;
-}
+/*
 char* decrypt(rsakey_t* key, cipher_t* cipher){
 	int* encrypted;
 	int blocks, i, n, d;
