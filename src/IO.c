@@ -4,18 +4,17 @@
 #include "../utils/rsa.h"
 #include "../utils/types.h"
 
-void writeCipherTextToFile(char* outputFileName, int* cipherText, unsigned int blocksize){
+void writeCipherTextToFile(char* outputFileName, mpz_t* cipherText, unsigned int blocksize){
 	int i = 0;
-	char* letter, buff[50];
+
 	FILE* outputFile = fopen(outputFileName, "w");
-	while (i < blocksize-1){
-		sprintf(buff, "%d", cipherText[i]);
-		fprintf(outputFile, "%s ", buff);
+	while (i < blocksize){
+		mpz_out_str (outputFile, 10, cipherText[i]);
 		i++;
 	}
 	fclose(outputFile);
 }
-
+/*
 cipher_t* readCipherTextFromFile(char* inputFileName){
 	FILE* inputFile;
 	size_t buff_size;
@@ -29,12 +28,12 @@ cipher_t* readCipherTextFromFile(char* inputFileName){
 	inputFile = fopen(inputFileName, "r");
 	fgets(myString, 1024, inputFile);
 	fclose(inputFile); 
-	cipher->c =(int*) myString;	
+	//cipher->c =(int*) myString;	
 	free(myString);	
 	
 	return cipher;
 }
-
+*/
 void writeKeyToFile(rsakey_t* key, char* filebasename){
 	FILE* pubKeyFile = fopen("Name-public.key", "w");
 	fprintf(pubKeyFile, "public\n%d\n", key->l);

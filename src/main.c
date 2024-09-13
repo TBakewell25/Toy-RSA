@@ -48,8 +48,8 @@ int main(int argc, char** argv){
 			//char* fileName = strcat(keyName, "-public.key");
 		
 			rsakey_t* key = readKeyFromFile("Name-public.key");
-			cipher_t* cipherText = encrypt(key, "Hello, testing my encryption!");
-			//writeCipherTextToFile(outputFileName, cipherText->c, cipherText->l);
+			cipher_t* cipherText = encrypt(key, "hello there, testing an encrypted output");
+			writeCipherTextToFile(outputFileName, cipherText->c, cipherText->l);
 		}
 
 /*

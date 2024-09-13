@@ -5,11 +5,11 @@ typedef struct {
 	unsigned int l;
 	mpz_t e;
 	mpz_t d;
-	mpz_t  n;
+	mpz_t n;
 }rsakey_t;
 
 typedef struct {
-	unsigned int* c;
+	mpz_t* c;
 	int l;
 	int b;
 }cipher_t;

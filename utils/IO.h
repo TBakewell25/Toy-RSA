@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include "types.h"
 
-void* writeCipherTextToFile(void* outputFileName, int* cipherText, unsigned int blocksize);
+void* writeCipherTextToFile(void* outputFileName, mpz_t* cipherText, unsigned int blocksize);
 
 cipher_t* readCipherTextFromFile(char* inputFileName);
 
