@@ -1,10 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "../utils/rsa.h"
 #include "../utils/types.h"
-#include <openssl/rsa.h>
-#include <openssl/bn.h>
-#include <openssl/engine.h>
 
 void writeCipherTextToFile(char* outputFileName, int* cipherText, unsigned int blocksize){
 	int i = 0;
@@ -43,8 +41,7 @@ void writeKeyToFile(rsakey_t* key, char* filebasename){
 	
 	
 	mpz_out_str(pubKeyFile, 10, key->e);
-	fprintf(pubKeyFile, "\n\n");
-
+	fprintf(pubKeyFile, "\n");
 	mpz_out_str(pubKeyFile, 10, key->n);
 
 	fclose(pubKeyFile);
@@ -54,7 +51,7 @@ void writeKeyToFile(rsakey_t* key, char* filebasename){
 	fprintf(privKeyFile, "private\n%d\n", key->l);
 	
 	mpz_out_str(privKeyFile, 10, key->d);
-	fprintf(pubKeyFile, "\n\n", key->l);
+	fprintf(privKeyFile, "\n");	
 	mpz_out_str(privKeyFile, 10, key->n);
 
 	fclose(privKeyFile);
@@ -62,33 +59,32 @@ void writeKeyToFile(rsakey_t* key, char* filebasename){
 	
 }
 
-/*
 
-rsakey_t* readKeyFromFile(char* filename, unsigned int flag){
+rsakey_t* readKeyFromFile(char* filename){
 	FILE* inputFile;
 	rsakey_t* key;
-	char* text[4];
-	int i = 0, j;
+	char* text, size[5];
+	int j, i =0;
+	mpz_t tmp[3];
 	
 	inputFile = fopen(filename, "r");
-	key =(rsakey_t*) malloc(sizeof(rsakey_t));
-	for (j = 0; i < 4; i++){
-		text[i] = (char*) malloc(sizeof(char));	
-		fgets(text[i], 100, inputFile);
-		text[i][strcspn(text[i], "\n")] = 0;
-	}	
-	
-	if (!(strcmp((char*)text[0], "public")))
-		key->e = atoi(text[2]);
-	
-	if (!(strcmp((char*)text[0], "private")))
-		key->d = atoi(text[2]);
 
-	key->l = atoi(text[1]);
-	key->n = atoi(text[3]);
+	//tmp = (mpz_t*) malloc(sizeof(mpz_t) * 3);
+	key =(rsakey_t*) malloc(sizeof(rsakey_t));
+	text = (char*) malloc(sizeof(char) * 10);
+
+	fgets(text, 10, inputFile);
+	fgets(size, 5, inputFile);
+	
+	for (j = 0; i < 3; i++){
+		mpz_init(tmp[i]);
+		mpz_inp_str(tmp[i], inputFile, 10);
+		
+	}	
+	init_key(key);
+	fill_key(atoi(size), tmp[0], tmp[1], tmp[2], key);
 	
 	fclose(inputFile);
 	
 	return key;
 }
-*/

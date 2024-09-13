@@ -44,14 +44,15 @@ int main(int argc, char** argv){
 			rsakey_t* key = generateKeys(bitLength);
 			writeKeyToFile (key, keyName);
 		}
-/*
 		if(strcmp("-encrypt", argv[i]) == 0){
 			//char* fileName = strcat(keyName, "-public.key");
 		
 			rsakey_t* key = readKeyFromFile("Name-public.key");
 			cipher_t* cipherText = encrypt(key, "Hello, testing my encryption!");
-			writeCipherTextToFile(outputFileName, cipherText->c, cipherText->l);
+			//writeCipherTextToFile(outputFileName, cipherText->c, cipherText->l);
 		}
+
+/*
 		if(strcmp("-decrypt", argv[i]) == 0){
 			//char* fileName = strcat(keyName, "-public.key");
 			rsakey_t* key = readKeyFromFile("Name-private.key");

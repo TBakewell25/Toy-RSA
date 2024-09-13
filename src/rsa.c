@@ -8,23 +8,6 @@
 #include<unistd.h>
 #include <gmp.h>
 
-unsigned int power(unsigned int x, unsigned int y, unsigned int p){
-    int res = 1;
-    while (y > 0) {
-        if (y % 2 == 1)
-            res = (res * x);
-        y = y >> 1;
-        x = (x * x);
-    }
-    return res % p;
-}
-
-int mod_inverse(int A, int M){
-    for (int X = 1; X < M; X++)
-        if (((A % M) * (X % M)) % M == 1)
-            return X;
-}
-
 void init_key(rsakey_t* Key){
 	mpz_init(Key->e);
 	mpz_init(Key->d);
@@ -111,34 +94,82 @@ rsakey_t* generateKeys(int bitlength){
 	return key;
 }
 
+char* strSplit(char* string, int index){
+	char* retString;
 
-/*
-int* encode(int* ascii, int blocksize, int n, int e, unsigned int size){
-	int i, num, retBuff[50], tmp, l, j = 0;
-	char *combo, curr[5], next[5], full[size+1]; 
-	
-	while(j <= blocksize){
-		sprintf(curr, "%d", ascii[j]);	
-		if (j <= blocksize-1)
-			sprintf(next, "%d", ascii[j+1]);	
-		strcat(curr, next);
-		strcat(full, curr);
-		j= j + 2;
-	}
-	i = 0;
-	while (i < sizeof(full)){
-		combo = strtok(full, &full[j+blocksize]);
-		tmp = atoi(combo);
-		l = fmod(pow(tmp, e), n);
-		j = j + blocksize;
-		retBuff[j%blocksize];
-	}
+	retString = (char*) malloc(index+1);
 
-	return retBuff;
+	memcpy(retString, string, index);
+	string = &string[index+1];
+
+	retString[index] ='\0';
+
+	return retString;
 }
+	
 				
+char* encode(char* text, unsigned int size){
+	unsigned int j, i, buff[size];
+	char* encoded, *tmp;
 	
 
+	encoded = (char*) malloc(sizeof(char) * size * 3);
+	
+	encoded[0] = '\0';
+
+	for (j = 0; j < size; j++)
+		buff[j] = (int) text[j];
+
+	for (i = 0; i < size; i++){
+		tmp = malloc(sizeof(char)*5);
+		sprintf(tmp, "%d", buff[i]);
+		char new[sizeof(tmp)+1];
+
+		if(strlen(tmp) == 2){
+			new[0] = '\0';
+			strcat(new, tmp);
+			tmp = new;
+		}
+		strcat(encoded, tmp);
+	}
+	return encoded;
+}
+
+
+		
+cipher_t* encrypt(rsakey_t* key, char* plaintext){
+	unsigned int size, blocksize, j, i, *blocks;
+	mpz_t n;
+	char* encoded, *block;
+	cipher_t* cipher;
+
+	mpz_init(n);
+	mpz_set(n, key->n);
+
+	size = strlen(plaintext);
+	encoded = encode(plaintext, size);
+
+	blocksize = mpz_sizeinbase(n, 10);
+	blocks = malloc(sizeof(int) * size);
+	block = malloc(sizeof(char) * 10);
+	
+	cipher = malloc(sizeof(cipher));
+
+	for (j = 0; j < size; j += blocksize){
+		block = strSplit(encoded, j);
+		i = j / blocksize;
+
+		blocks[i] = atoi(block);
+	}
+
+	cipher->c = blocks;
+	return cipher;
+}
+	
+
+	
+
+/*	
 cipher_t* encrypt(rsakey_t* key, char* plaintext){
 	int blocksize = strlen(plaintext);
 	int i,  cryptext[blocksize];
