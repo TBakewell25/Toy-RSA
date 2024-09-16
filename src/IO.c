@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <gmp.h>
 #include "../utils/rsa.h"
 #include "../utils/types.h"
 
@@ -8,13 +9,15 @@ void writeCipherTextToFile(char* outputFileName, mpz_t* cipherText, unsigned int
 	int i = 0;
 
 	FILE* outputFile = fopen(outputFileName, "w");
+	
 	while (i < blocksize){
-		mpz_out_str (outputFile, 10, cipherText[i]);
+		mpz_out_str(outputFile,10, cipherText[i]);
+		fprintf(outputFile, "\n");
 		i++;
 	}
 	fclose(outputFile);
 }
-/*
+
 cipher_t* readCipherTextFromFile(char* inputFileName){
 	FILE* inputFile;
 	size_t buff_size;
@@ -33,11 +36,11 @@ cipher_t* readCipherTextFromFile(char* inputFileName){
 	
 	return cipher;
 }
-*/
+
 void writeKeyToFile(rsakey_t* key, char* filebasename){
 	FILE* pubKeyFile = fopen("Name-public.key", "w");
-	fprintf(pubKeyFile, "public\n%d\n", key->l);
 	
+	fprintf(pubKeyFile, "public\n%d\n", key->l);
 	
 	mpz_out_str(pubKeyFile, 10, key->e);
 	fprintf(pubKeyFile, "\n");

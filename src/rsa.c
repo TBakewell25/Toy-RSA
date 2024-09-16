@@ -77,9 +77,9 @@ void generate_prime(int bits, int k, mpz_t result){
 
 
 rsakey_t* generateKeys(int bitlength){
-	mpz_t p ,q, e, d, n;
+	mpz_t p ,q, e, d, n, tmp;
 
-	mpz_inits(n, p, q, e, d,  NULL);
+	mpz_inits(n, p, q, e, d, tmp, NULL);
 	
 	rsakey_t* key;
 
@@ -87,15 +87,13 @@ rsakey_t* generateKeys(int bitlength){
 	generate_prime(bitlength, 50, q);
 	
 		
-	mpz_mul(n, p, q);
-
+	mpz_mul(tmp, p, q);
 	generate_prime(bitlength, 50, e);
 	
-	mpz_nextprime(n ,n);	
+	mpz_nextprime(n ,tmp);	
 	mpz_invert(d, e, n);
-	gmp_printf("%Zd\n", d);
-
 	
+	//mpz_out_str (stdout, 10, n);
 	if (!(key = (rsakey_t*) malloc(sizeof(rsakey_t)))){
 		printf("BAD MALLOC");
 		return NULL;
@@ -111,12 +109,12 @@ char* strSplit(char* string, int base, int index) {
 	int size;
 
 	size = index-base+1;
-	char* retString = (char*) malloc(sizeof(char)*size);
+	char* retString = (char*) malloc(sizeof(char)*size+1);
     
 
-	memcpy(retString, string + base, index -base);
+	memcpy(retString, string + base, size);
     
-	retString[index] = '\0';
+	retString[size] = '\0';
 
 	return retString;
 }
@@ -136,14 +134,7 @@ char* encode(char* text, unsigned int size){
 
 	for (i = 0; i < size; i++){
 		tmp = malloc(sizeof(char)*5);
-		sprintf(tmp, "%d", buff[i]);
-		char new[sizeof(tmp)+1];
-
-		if(strlen(tmp) == 2){
-			new[0] = '\0';
-			strcat(new, tmp);
-			tmp = new;
-		}
+		sprintf(tmp, "%03d", buff[i]);
 		strcat(encoded, tmp);
 	}
 	return encoded;
@@ -153,37 +144,38 @@ char* encode(char* text, unsigned int size){
 		
 cipher_t* encrypt(rsakey_t* key, char* plaintext){
 	unsigned int size, blocksize, j, i =0, blockCount = 0;
+	int newBlock;
 	mpz_t n, m, e, *blocks, tmp;
-	char* encoded, *block; 
+	char *encoded, *block; 
 	cipher_t* cipher;
 
-	mpz_init(n);
-	mpz_init(e);
-	mpz_init(m);
+	mpz_inits(n, e, NULL);
 	mpz_set(n, key->n);
-	mpz_set(n, key->e);
+	mpz_set(e, key->e);
 
 	size = strlen(plaintext);
 	encoded = encode(plaintext, size);
 
 	blocksize = (int)floor(mpz_sizeinbase(n, 10)/3.32);
-	blocks = malloc(sizeof(int) * size);
-	block = malloc(sizeof(mpz_t) * 10);
+	blocks = malloc(sizeof(mpz_t) * size);
+		
+	cipher = malloc(sizeof(cipher_t));
 	
-	cipher = malloc(sizeof(cipher));
-	printf("%d\n", size);
-	printf("%d\n", blocksize);
 	for (j = 0; j < size-6; j += 6){
+		mpz_inits(tmp,m, blocks[i], NULL);
+
 		block = strSplit(encoded, j, j + 6);
+		newBlock = atoi(block);
 		
-		mpz_init(tmp);
-		mpz_init(blocks[i]);
+		mpz_init_set_ui(m, newBlock);
+		mpz_out_str(stdout, 10, m);	
 		
-		mpz_set_ui(m, atoi(block));
+		mpz_set_ui(n, 387);
 		mpz_powm(tmp, m, e, n);
 		mpz_set(blocks[i], tmp);
+	
 		mpz_clear(tmp);
-
+		mpz_clear(m);
 		blockCount++;
 		i++;
 		
@@ -191,6 +183,7 @@ cipher_t* encrypt(rsakey_t* key, char* plaintext){
 	cipher->l = blockCount;
 
 	cipher->c = blocks;
+	free(encoded);
 	return cipher;
 }
 	
