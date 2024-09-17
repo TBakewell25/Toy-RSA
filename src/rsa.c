@@ -16,9 +16,10 @@ void init_key(rsakey_t* Key){
 
 void fill_key(unsigned long l, mpz_t e, mpz_t d, mpz_t n, rsakey_t* key){
 	key->l = l;	
-
-	mpz_set(key->e, e);
-	mpz_set(key->d, d);
+	if (e)
+		mpz_set(key->e, e);
+	if(d)
+		mpz_set(key->d, d);
 	mpz_set(key->n, n);
 }
 
@@ -87,10 +88,9 @@ rsakey_t* generateKeys(int bitlength){
 	generate_prime(bitlength, 50, q);
 	
 		
-	mpz_mul(tmp, p, q);
-	generate_prime(bitlength, 50, e);
+	mpz_mul(n, p, q);
+	generate_prime(bitlength -1, 50, e);
 	
-	mpz_nextprime(n ,tmp);	
 	mpz_invert(d, e, n);
 	
 	//mpz_out_str (stdout, 10, n);
@@ -170,7 +170,7 @@ cipher_t* encrypt(rsakey_t* key, char* plaintext){
 		mpz_init_set_ui(m, newBlock);
 		mpz_out_str(stdout, 10, m);	
 		
-		mpz_set_ui(n, 387);
+		//mpz_set_ui(n, 387);
 		mpz_powm(tmp, m, e, n);
 		mpz_set(blocks[i], tmp);
 	
@@ -188,23 +188,28 @@ cipher_t* encrypt(rsakey_t* key, char* plaintext){
 }
 	
 
-	
-/*
-char* decrypt(rsakey_t* key, cipher_t* cipher){
-	int* encrypted;
-	int blocks, i, n, d;
+
+void decrypt(rsakey_t* key, cipher_t* cipher){
+	mpz_t n, d, *encrypted, tmp;
+	int blocks = 4, i;
 	char decoded[256];
-	
+
+	mpz_inits(n,d, NULL);
+
 	encrypted = cipher->c;
-	blocks = strlen(encrypted);
 	
-	d = key->d;
-	n = key->n;
+	
+	//d = key->d;
+	//n = key->n;
 
-	for (i = 0; i < blocks; i++)
-		decoded[i] = power(encrypted[i], d, n);
+	for (i = 0; i < blocks; i++){
+		mpz_inits(tmp, n, NULL);
+		mpz_set_ui(n, 387);
+		mpz_powm(tmp, encrypted[i], key->d, n);
 
-	return decoded;
+		mpz_clears(n, tmp, NULL);
+	
+	}
+	//return decoded;
 }
 		
-*/

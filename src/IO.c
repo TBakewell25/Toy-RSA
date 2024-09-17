@@ -21,18 +21,21 @@ void writeCipherTextToFile(char* outputFileName, mpz_t* cipherText, unsigned int
 cipher_t* readCipherTextFromFile(char* inputFileName){
 	FILE* inputFile;
 	size_t buff_size;
-	unsigned char* myString;
+	int i = 0;
+	mpz_t encrypted[10];
 	cipher_t* cipher;
 
 	cipher = (cipher_t*) malloc(sizeof(cipher_t));
-	myString = malloc(sizeof(char)*1024);	
-	buff_size = 1024;
-
 	inputFile = fopen(inputFileName, "r");
-	fgets(myString, 1024, inputFile);
+
+	for (int i = 0; i < 5; i++){
+		mpz_init(encrypted[i]);
+		mpz_inp_str(encrypted[i], inputFile, 10);
+		i++;
+	}
+
 	fclose(inputFile); 
-	//cipher->c =(int*) myString;	
-	free(myString);	
+	cipher->c = encrypted;	
 	
 	return cipher;
 }
@@ -78,14 +81,27 @@ rsakey_t* readKeyFromFile(char* filename){
 	fgets(text, 10, inputFile);
 	fgets(size, 5, inputFile);
 	
-	for (j = 0; i < 3; i++){
-		mpz_init(tmp[i]);
-		mpz_inp_str(tmp[i], inputFile, 10);
-		
-	}	
 	init_key(key);
-	fill_key(atoi(size), tmp[0], tmp[1], tmp[2], key);
-	
+
+	if (strcmp(text, "public") == 0){
+		for (j = 0; i < 3; i++){
+			mpz_init(tmp[i]);
+			mpz_inp_str(tmp[i], inputFile, 10);
+		}
+		fill_key(atoi(size), NULL, tmp[0], tmp[1], key);
+
+	}
+
+	else{
+		for (j = 0; i < 2; i++){
+			mpz_init(tmp[i]);
+			mpz_inp_str(tmp[i], inputFile, 10);
+		}
+		fill_key(atoi(size), tmp[0], NULL, tmp[1], key);
+
+	}
+		
+			
 	fclose(inputFile);
 	
 	return key;
