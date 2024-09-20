@@ -10,12 +10,12 @@
 #include <stdlib.h>
 #include "types.h"
 
-void* writeCipherTextToFile(void* outputFileName, const char* cipherText);
+void* writeCipherTextToFile(void* outputFileName, mpz_t* cipherText, unsigned int blocksize);
 
-char* readCipherTextFromeFile(char* inputFileName);
+cipher_t* readCipherTextFromFile(char* inputFileName);
 
-void* writeKeyToFile(EVP_PKEY* key, char* filebasename);
+void* writeKeyToFile(rsakey_t* key, char* filebasename);
 
-EVP_PKEY* readKeyFromFile(char* filename);
+rsakey_t* readKeyFromFile(char* filename);
 	
 #endif

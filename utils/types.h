@@ -1,15 +1,15 @@
 #ifndef TYPES_H
 #define TYPES_H
-
+#include <gmp.h>
 typedef struct {
-	int* bit_length;
-	char* public_key;
-	char* private_key;
-	char* modulus;
+	unsigned int l;
+	mpz_t e;
+	mpz_t d;
+	mpz_t n;
 }rsakey_t;
 
 typedef struct {
-	unsigned char* c;
+	mpz_t* c;
 	int l;
 	int b;
 }cipher_t;

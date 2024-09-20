@@ -41,23 +41,27 @@ int main(int argc, char** argv){
 		if(strcmp("-keygen", argv[i]) == 0){
 			i++;
 			int bitLength = atoi(argv[i]);
-			EVP_PKEY* key = generateKeys(bitLength);
+			rsakey_t* key = generateKeys(bitLength);
 			writeKeyToFile (key, keyName);
 		}
 		if(strcmp("-encrypt", argv[i]) == 0){
 			//char* fileName = strcat(keyName, "-public.key");
 		
-			EVP_PKEY* key = readKeyFromFile("Output.pem");
-			char* cipherText = encrypt(key, "Hello, I am testing this");
-			writeCipherTextToFile(outputFileName, cipherText);
+			rsakey_t* key = readKeyFromFile("Name-public.key");
+			cipher_t* cipherText = encrypt(key, "hello there, testing an encrypted output");
+			writeCipherTextToFile(outputFileName, cipherText->c, cipherText->l);
 		}
 
+
 		if(strcmp("-decrypt", argv[i]) == 0){
-			char* fileName = strcat(keyName, "-public.key");
-			//char* cipherText = readCipherTextFromeFile(fileName);
-			//char*plaintext = decrypt(key, ciphertext);
-			//writeCipherTextToFile(outputFileName, cipherText);
+			//char* fileName = strcat(keyName, "-public.key");
+			rsakey_t* key = readKeyFromFile("Name-private.key");
+
+			cipher_t* cipherText = readCipherTextFromFile("output.txt");
+			char* plaintext = decrypt(key, cipherText);
+			//writeCipherTextToFile("test.txt", plaintext);
 		}
+		/*	
 		if(strcmp("-sign", argv[i]) == 0){
 			char* fileName = strcat(keyName, "-private.key");
 			//char* key = readKeyFromFile(fileName);
@@ -89,11 +93,10 @@ int main(int argc, char** argv){
 			int seed = atoi(argv[++i]);
 			//random.seed(seed); //find c implementation
 		}
-
+		
 		else{
 			printf("Unknown parameter: %s, exiting.", argv[i]);
-	
-		}
+		*/	
 
 		i++;
 

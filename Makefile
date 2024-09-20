@@ -2,8 +2,8 @@
 
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -g -Wextra -I./utils -I./src
-LDFLAGS = -lssl -lcrypto
+CFLAGS = -Wall -g -Wextra -I./utils -I./src -I/usr/include/
+LDFLAGS = -lssl -lcrypto -lm -lgmp
 OBJDIR = ./obj
 BINDIR = ./bins
 
@@ -31,7 +31,7 @@ $(EXEC): $(OBJ) | $(BINDIR)
 
 # Compile source files into object files
 $(OBJDIR)/%.o: ./src/%.c | $(OBJDIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c  $< -o $@
 
 # Clean up generated files
 clean:

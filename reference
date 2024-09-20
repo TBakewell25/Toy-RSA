@@ -1,0 +1,122 @@
+def generateKeys(bitlength):
+p = generate_prime(bitlength, 10)
+q = generate_prime(bitlength, 10)
+if showPandQ:
+print(str(p))
+print(str(q))
+n = p * q
+
+generateE = n+1
+while generateE > n - 10: #generate an e value within a reasonable range of n
+generateE = generate_prime(bitlength, 20)
+e = generateE
+
+d = pow(e, -1, (p-1)*(q-1))
+
+public = (e)
+private = (d)
+
+ourKeys = rsakey(bitlength, public, private, n) #create a new rsakey object with the values we just generated
+return ourKeys
+
+# Given the passed rsakey object and string, this will perform the RSA
+# encryption. It should return a ciphertext object.
+def encrypt(key, plaintext):
+
+blockSize = key.n.bit_length()
+blockLength = (blockSize-1) // 8
+
+
+
+decText = str(convertFromASCII(plaintext)) #get a string of the decimal rep of the plaintext
+decTextArr = []
+
+for letter in decText:
+decTextArr.append(letter) #add each letter to an array
+
+blocks = []
+for i in range(0, len(decTextArr), blockLength): #split the array into blocks of the appropriate size
+block = ''.join(map(str, decTextArr[i:i+blockLength]))
+blocks.append(block)
+
+
+encryptedBlocks = []
+for block in blocks: #encrypt each block
+block = pow(int(block), key.e, key.n)
+encryptedBlocks.append(block)
+
+
+CipheredObj = ciphertext(encryptedBlocks, len(plaintext), blockLength) #create a new ciphertext object with the values we just generated
+return CipheredObj
+
+
+
+# Given the provided rsakey object and ciphertext object plaintext, this will
+# perform the RSA decryption. It should return a string.
+def decrypt(key, cipherText):
+encryptedBlocks = cipherText.c
+
+blockLength = cipherText.b
+string = ''
+
+for item in encryptedBlocks:
+decoded = pow(int(item), key.d, key.n) #decode each block
+if len(str(decoded)) < int(blockLength) and item != encryptedBlocks[-1]:
+#Explanation: this accounts for leading zeroes that are lost in the encryption/decryption process. From what I can tell, this only
+#arises with 12-bit ascii characters such as '!'. Theoretically, if the final block had a leading 0, and was otherwise shorter than the block
+#size, then this would occur. This error could only be produced by very specific text inputs and very specific bit-sizes for the blocks.
+#I have not been able to find test cases that cause this error, as they are seemingly infinitesimally rare. However, theoretically, it could occur.
+decoded = '0' + str(decoded) #artificially add the leading zero back in
+string += str(decoded)
+
+final = convertToASCII(int(string))
+ 
+return final
+
+
+
+# Given the passed rsakey, which will not have a private (d) key, it will
+# determine the private key by attempting to factor n.  It returns a rsakey
+# object.
+def crack(key):
+modulus = key.n
+factors = factorize(modulus) #factorize n, this will take a LONG time
+p = factors[0]
+q = factors[1]
+d = pow(key.e, -1, (p-1)*(q-1))
+privKey = (d)
+
+crackedRSA = rsakey(key.l, key.e, privKey, key.n)
+return crackedRSA
+
+# Given the passed rsakey object and string, it will return a ciphertext object that
+# is the digital signature of the text, signed with the private key.
+def sign(key, plaintext):
+m = plaintext
+
+h = hashlib.sha256(bytes(m,'ascii')).hexdigest() #hash the plaintext
+
+newKey = rsakey(key.l, key.d, key.e, key.n) #make a new rsa with the public and private key swapped
+CipheredHash = encrypt(newKey, h)
+
+MessageArr = []
+MessageArr.append(m) #storing the message in an array prevents it from being inadvertently split into blocks by the next line
+CipheredHash.c.append(MessageArr)
+
+return CipheredHash
+
+# Given the passed rsakey object, string, and ciphertext object, this will
+# check the signature; it only returns True (if the signature is valid) or
+# False (if not).
+def checkSign(key,plaintext,signature):
+m = plaintext
+
+newkey = rsakey(key.l, key.d, key.e, key.n) #create a new rsa with the public and private key swapped
+newCipher = ciphertext(signature.c[:-1], signature.l, signature.b) #create a new ciphertext with the message removed
+h1 = decrypt(newkey, newCipher)
+
+h2 = hashlib.sha256(bytes(m,'ascii')).hexdigest()
+if h1 == h2:
+return True
+else:
+return Falset 
